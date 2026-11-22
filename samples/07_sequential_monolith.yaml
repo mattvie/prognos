@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  title: Monolito Sequencial Estrito
+  version: 1.0.0
+  description: Sem dependências de rede, apenas processamento de CPU bloqueante e longo.
+x-service-performance:
+  instances: 2
+  worker_type: legacy
+paths:
+  /report:
+    post:
+      summary: Geração de Relatório de Fechamento
+      x-performance:
+        processing_time:
+          distribution: log-normal
+          mean_ms: 850
+      responses:
+        '200':
+          description: OK

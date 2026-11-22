@@ -1,0 +1,77 @@
+digraph SPN {
+  rankdir=LR;
+  splines=spline;
+  nodesep=0.75;
+  ranksep=1.05;
+  bgcolor="white";
+  pad=0.35;
+  forcelabels=true;
+  compound=true;
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.75, color="#2b2b2b"];
+
+  // --- RECURSOS COMPARTILHADOS ---
+  P_Workers [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers"];
+  P_Workers_email [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers_email"];
+  P_Workers_audit [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers_audit"];
+
+  // --- SUBREDES DAS ROTAS ---
+  subgraph cluster_POST_order {
+    label="POST_order";
+    fontsize=12;
+    style=rounded; color="#b9c4d4"; margin=14;
+    P_Gen_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Gen"];
+    P_Queue_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Queue"];
+    P_Busy_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+    P_Free_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="3", xlabel="P_Free"];
+    TT_Arrival_POST_order [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Arrival"];
+    IT_Enter_POST_order [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Enter"];
+    IT_Start_POST_order [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+    TT_Processing_POST_order [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    IT_Drop_POST_order [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Drop"];
+    subgraph cluster_POST_order_email {
+      label="email";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_email_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_email_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      IT_Start_email_POST_order [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_email_POST_order [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    }
+    subgraph cluster_POST_order_audit {
+      label="audit";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_audit_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_audit_POST_order [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      IT_Start_audit_POST_order [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_audit_POST_order [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    }
+  }
+
+  // --- ARCOS ---
+  TT_Arrival_POST_order -> P_Gen_POST_order;
+  P_Gen_POST_order -> IT_Enter_POST_order;
+  P_Free_POST_order -> IT_Enter_POST_order [color="#16697a"];
+  IT_Enter_POST_order -> P_Queue_POST_order;
+  P_Queue_POST_order -> IT_Start_POST_order;
+  P_Workers -> IT_Start_POST_order [color="#1a6b3c"];
+  IT_Start_POST_order -> P_Wait_email_POST_order;
+  P_Wait_email_POST_order -> IT_Start_email_POST_order;
+  P_Workers_email -> IT_Start_email_POST_order [color="#8a5a00"];
+  IT_Start_email_POST_order -> P_Busy_email_POST_order;
+  P_Busy_email_POST_order -> TT_Processing_email_POST_order;
+  TT_Processing_email_POST_order -> P_Wait_audit_POST_order;
+  TT_Processing_email_POST_order -> P_Workers_email [color="#8a5a00", constraint=false];
+  P_Wait_audit_POST_order -> IT_Start_audit_POST_order;
+  P_Workers_audit -> IT_Start_audit_POST_order [color="#6a3d9a"];
+  IT_Start_audit_POST_order -> P_Busy_audit_POST_order;
+  P_Busy_audit_POST_order -> TT_Processing_audit_POST_order;
+  TT_Processing_audit_POST_order -> P_Busy_POST_order;
+  TT_Processing_audit_POST_order -> P_Workers_audit [color="#6a3d9a", constraint=false];
+  P_Busy_POST_order -> TT_Processing_POST_order;
+  TT_Processing_POST_order -> P_Workers [color="#1a6b3c", constraint=false];
+  TT_Processing_POST_order -> P_Free_POST_order [color="#16697a", constraint=false];
+  P_Gen_POST_order -> IT_Drop_POST_order;
+  P_Free_POST_order -> IT_Drop_POST_order [arrowhead=odot, color="#b03030", penwidth=1.7, constraint=false];
+}

@@ -1,0 +1,29 @@
+openapi: 3.0.0
+info:
+  title: API Simples (Baseline)
+  version: 1.0.0
+  description: Teste base sem dependências externas.
+x-service-performance:
+  instances: 2
+  worker_type: standard
+paths:
+  /ping:
+    get:
+      summary: Health check rápido
+      x-performance:
+        processing_time:
+          distribution: exponential
+          mean_ms: 15
+      responses:
+        '200':
+          description: OK
+  /data:
+    post:
+      summary: Submissão de dados
+      x-performance:
+        processing_time:
+          distribution: log-normal
+          mean_ms: 60
+      responses:
+        '200':
+          description: OK

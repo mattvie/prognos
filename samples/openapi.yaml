@@ -1,0 +1,125 @@
+openapi: 3.0.0
+info:
+  title: "CliendiPrev - Sistema de Clínica Médica"
+  description: "API para gestão de consultas e pacientes, integrada com parâmetros de performance para o software Mercury."
+  version: "0.1.1"
+
+# --- CONFIGURAÇÃO GLOBAL DO SERVIÇO ---
+# x-service-performance: Define o contexto da infraestrutura onde o serviço roda.
+# No modelo de Rede de Petri (SPN), isso configura o ambiente comum a todas as rotas.
+x-service-performance:
+  # instances: Define a quantidade de réplicas/containers.
+  # Na SPN, isso é o número inicial de TOKENS no lugar de recursos
+  instances: 1 
+  
+  # worker_type: Define o perfil de hardware (ex: standard-cpu, high-cpu).
+  # No Mercury, pode ser usado como um multiplicador de performance (fator de escala) para a taxa de serviço.
+  worker_type: "standard-cpu"
+
+paths:
+  /health:
+    get:
+      summary: "Verifica a saúde da aplicação"
+      responses:
+        '200':
+          description: "Serviço ativo"
+
+  /v1/users/register:
+    post:
+      summary: "Registra um novo usuário"
+      # x-performance: Metadados específicos para a transição estocástica desta rota.
+      x-performance:
+        # processing_time: O núcleo matemático do tempo de disparo (firing time).
+        # distribution: O modelo estocástico (Log-normal é ideal para capturar a 'cauda' de latência).
+        # mean_ms / std_dev_ms: Parâmetros que alimentam a função de densidade de probabilidade no Mercury.
+        processing_time: { distribution: "log-normal", mean_ms: 45, std_dev_ms: 10 }
+      responses:
+        '201':
+          description: "Criado"
+
+  /v1/appointments:
+    post:
+      summary: "Cria um novo agendamento"
+      description: "Realiza a criação de paciente 'on the fly' se necessário e checa overlap de horários."
+      
+      x-performance:
+        processing_time: 
+          distribution: "log-normal"
+          mean_ms: 85 # Tempo maior refletindo a lógica complexa do handler Go (várias queries).
+          std_dev_ms: 15
+        
+        # dependencies: Define chamadas externas ou a recursos compartilhados.
+        # Na SPN, isso gera os ARCOS que conectam esta transição a outros submodelos.
+        dependencies:
+          # service: Identifica o alvo da dependência (ex: banco de dados, outro microsserviço).
+          # calls: Define a multiplicidade. Se o código Go faz 3 queries, o token percorre o submodelo 3 vezes.
+          - service: "postgresql-db"
+            calls: 3 
+      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AppointmentInput'
+      
+      responses:
+        '201':
+          description: "Agendamento criado com sucesso"
+        '400':
+          description: "JSON inválido ou dados obrigatórios ausentes"
+        '409':
+          description: "Conflito: Horário já ocupado por outro agendamento"
+        '500':
+          description: "Erro interno no servidor"
+
+    get:
+      summary: "Lista todos os agendamentos"
+      x-performance:
+        processing_time: { distribution: "log-normal", mean_ms: 60, std_dev_ms: 12 }
+      responses:
+        '200':
+          description: "Lista de agendamentos"
+
+  /v1/appointments/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      summary: "Atualiza um agendamento completo"
+      responses:
+        '200':
+          description: "Atualizado"
+    delete:
+      summary: "Remove um agendamento"
+      responses:
+        '204':
+          description: "Removido"
+
+components:
+  schemas:
+    AppointmentInput:
+      type: object
+      required:
+        - doctor_id
+        - author_id
+        - appointment_time
+      properties:
+        doctor_id: { type: string, format: uuid }
+        author_id: { type: string, format: uuid }
+        patient_id: { type: string, format: uuid, description: "Opcional se enviar dados do novo paciente" }
+        patient_name: { type: string }
+        patient_code: { type: string }
+        patient_phone: { type: string }
+        patient_gender: { type: string }
+        patient_birth_date: { type: string, format: "date", example: "1990-01-01" }
+        health_plan_id: { type: string, format: uuid }
+        appointment_type_id: { type: string, format: uuid }
+        appointment_time: { type: string, format: "date-time" }
+        duration_minutes: { type: integer, default: 30 }
+        notes: { type: string }
+        status: { type: string, enum: ["PENDING", "CONFIRMED", "BLOCKOUT"] }

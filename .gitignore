@@ -1,0 +1,7 @@
+*.tar.gz
+*.jar
+Mercury/java-runtime/
+Mercury/PortablePython311/
+/Mercury
+modelo_gerado.mry
+modelo_visual.dot

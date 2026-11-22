@@ -1,0 +1,19 @@
+openapi: 3.0.0
+info:
+  title: Gargalo de Fila (M/M/1/K)
+  version: 1.0.0
+  description: Força a saturação do servidor para testar o limite de buffer (Drop).
+x-service-performance:
+  instances: 1
+  worker_type: standard
+paths:
+  /export:
+    get:
+      summary: Exportação de PDF Pesada
+      x-performance:
+        processing_time:
+          distribution: exponential
+          mean_ms: 250
+      responses:
+        '200':
+          description: OK

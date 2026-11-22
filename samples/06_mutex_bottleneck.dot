@@ -1,0 +1,102 @@
+digraph SPN {
+  rankdir=LR;
+  splines=spline;
+  nodesep=0.75;
+  ranksep=1.05;
+  bgcolor="white";
+  pad=0.35;
+  forcelabels=true;
+  compound=true;
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.75, color="#2b2b2b"];
+
+  // --- RECURSOS COMPARTILHADOS ---
+  P_Workers [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="1", xlabel="P_Workers"];
+  P_Workers_mutex [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers_mutex"];
+
+  // --- SUBREDES DAS ROTAS ---
+  subgraph cluster_PUT_add {
+    label="PUT_add";
+    fontsize=12;
+    style=rounded; color="#b9c4d4"; margin=14;
+    P_Gen_PUT_add [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Gen"];
+    P_Queue_PUT_add [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Queue"];
+    P_Busy_PUT_add [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+    P_Free_PUT_add [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="3", xlabel="P_Free"];
+    TT_Arrival_PUT_add [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Arrival"];
+    IT_Enter_PUT_add [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Enter"];
+    IT_Start_PUT_add [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+    TT_Processing_PUT_add [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    IT_Drop_PUT_add [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Drop"];
+    subgraph cluster_PUT_add_mutex {
+      label="mutex";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_mutex_PUT_add [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_mutex_PUT_add [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      IT_Start_mutex_PUT_add [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_mutex_PUT_add [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    }
+  }
+  subgraph cluster_DELETE_remove {
+    label="DELETE_remove";
+    fontsize=12;
+    style=rounded; color="#b9c4d4"; margin=14;
+    P_Gen_DELETE_remove [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Gen"];
+    P_Queue_DELETE_remove [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Queue"];
+    P_Busy_DELETE_remove [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+    P_Free_DELETE_remove [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="3", xlabel="P_Free"];
+    TT_Arrival_DELETE_remove [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Arrival"];
+    IT_Enter_DELETE_remove [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Enter"];
+    IT_Start_DELETE_remove [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+    TT_Processing_DELETE_remove [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    IT_Drop_DELETE_remove [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Drop"];
+    subgraph cluster_DELETE_remove_mutex {
+      label="mutex";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_mutex_DELETE_remove [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_mutex_DELETE_remove [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      IT_Start_mutex_DELETE_remove [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_mutex_DELETE_remove [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    }
+  }
+
+  // --- ARCOS ---
+  TT_Arrival_PUT_add -> P_Gen_PUT_add;
+  P_Gen_PUT_add -> IT_Enter_PUT_add;
+  P_Free_PUT_add -> IT_Enter_PUT_add [color="#6a3d9a"];
+  IT_Enter_PUT_add -> P_Queue_PUT_add;
+  P_Queue_PUT_add -> IT_Start_PUT_add;
+  P_Workers -> IT_Start_PUT_add [color="#1a6b3c"];
+  IT_Start_PUT_add -> P_Wait_mutex_PUT_add;
+  P_Wait_mutex_PUT_add -> IT_Start_mutex_PUT_add;
+  P_Workers_mutex -> IT_Start_mutex_PUT_add [color="#8a5a00"];
+  IT_Start_mutex_PUT_add -> P_Busy_mutex_PUT_add;
+  P_Busy_mutex_PUT_add -> TT_Processing_mutex_PUT_add;
+  TT_Processing_mutex_PUT_add -> P_Busy_PUT_add;
+  TT_Processing_mutex_PUT_add -> P_Workers_mutex [color="#8a5a00", constraint=false];
+  P_Busy_PUT_add -> TT_Processing_PUT_add;
+  TT_Processing_PUT_add -> P_Workers [color="#1a6b3c", constraint=false];
+  TT_Processing_PUT_add -> P_Free_PUT_add [color="#6a3d9a", constraint=false];
+  TT_Arrival_DELETE_remove -> P_Gen_DELETE_remove;
+  P_Gen_DELETE_remove -> IT_Enter_DELETE_remove;
+  P_Free_DELETE_remove -> IT_Enter_DELETE_remove [color="#16697a"];
+  IT_Enter_DELETE_remove -> P_Queue_DELETE_remove;
+  P_Queue_DELETE_remove -> IT_Start_DELETE_remove;
+  P_Workers -> IT_Start_DELETE_remove [color="#1a6b3c"];
+  IT_Start_DELETE_remove -> P_Wait_mutex_DELETE_remove;
+  P_Wait_mutex_DELETE_remove -> IT_Start_mutex_DELETE_remove;
+  P_Workers_mutex -> IT_Start_mutex_DELETE_remove [color="#8a5a00"];
+  IT_Start_mutex_DELETE_remove -> P_Busy_mutex_DELETE_remove;
+  P_Busy_mutex_DELETE_remove -> TT_Processing_mutex_DELETE_remove;
+  TT_Processing_mutex_DELETE_remove -> P_Busy_DELETE_remove;
+  TT_Processing_mutex_DELETE_remove -> P_Workers_mutex [color="#8a5a00", constraint=false];
+  P_Busy_DELETE_remove -> TT_Processing_DELETE_remove;
+  TT_Processing_DELETE_remove -> P_Workers [color="#1a6b3c", constraint=false];
+  TT_Processing_DELETE_remove -> P_Free_DELETE_remove [color="#16697a", constraint=false];
+  P_Gen_PUT_add -> IT_Drop_PUT_add;
+  P_Free_PUT_add -> IT_Drop_PUT_add [arrowhead=odot, color="#b03030", penwidth=1.7, constraint=false];
+  P_Gen_DELETE_remove -> IT_Drop_DELETE_remove;
+  P_Free_DELETE_remove -> IT_Drop_DELETE_remove [arrowhead=odot, color="#b03030", penwidth=1.7, constraint=false];
+}

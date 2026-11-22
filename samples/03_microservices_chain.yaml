@@ -1,0 +1,24 @@
+openapi: 3.0.0
+info:
+  title: API Gateway (Múltiplas Dependências)
+  version: 1.2.0
+  description: Rota que depende de dois microsserviços diferentes.
+x-service-performance:
+  instances: 4
+  worker_type: high-cpu
+paths:
+  /checkout:
+    post:
+      summary: Processamento de Pagamento
+      x-performance:
+        processing_time:
+          distribution: exponential
+          mean_ms: 30
+        dependencies:
+          - service: auth-service
+            calls: 1
+          - service: payment-gateway
+            calls: 1
+      responses:
+        '200':
+          description: OK

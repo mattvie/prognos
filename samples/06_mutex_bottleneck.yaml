@@ -1,0 +1,35 @@
+openapi: 3.0.0
+info:
+  title: Condição de Corrida (Disputa de Mutex)
+  version: 1.0.0
+  description: Duas rotas concorrentes que dependem do mesmo recurso afunilado.
+x-service-performance:
+  instances: 1
+  worker_type: fast-cpu
+paths:
+  /add:
+    put:
+      summary: Adiciona item
+      x-performance:
+        processing_time:
+          distribution: exponential
+          mean_ms: 20
+        dependencies:
+          - service: mutex # Representa um recurso de 1 única thread
+            calls: 1
+      responses:
+        '200':
+          description: OK
+  /remove:
+    delete:
+      summary: Remove item
+      x-performance:
+        processing_time:
+          distribution: exponential
+          mean_ms: 20
+        dependencies:
+          - service: mutex
+            calls: 1
+      responses:
+        '200':
+          description: OK

@@ -1,0 +1,89 @@
+digraph SPN {
+  rankdir=LR;
+  splines=spline;
+  nodesep=0.75;
+  ranksep=1.05;
+  bgcolor="white";
+  pad=0.35;
+  forcelabels=true;
+  compound=true;
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.75, color="#2b2b2b"];
+
+  // --- RECURSOS COMPARTILHADOS ---
+  P_Workers [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="3", xlabel="P_Workers"];
+  P_Workers_redis_cache [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers_redis_cache"];
+  P_Workers_postgresql_db [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers_postgresql_db"];
+
+  // --- SUBREDES DAS ROTAS ---
+  subgraph cluster_GET_stats {
+    label="GET_stats";
+    fontsize=12;
+    style=rounded; color="#b9c4d4"; margin=14;
+    P_Gen_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Gen"];
+    P_Queue_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Queue"];
+    P_Busy_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+    P_Free_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="3", xlabel="P_Free"];
+    TT_Arrival_GET_stats [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Arrival"];
+    IT_Enter_GET_stats [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Enter"];
+    IT_Start_GET_stats [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+    TT_Processing_GET_stats [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    IT_Drop_GET_stats [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Drop"];
+    subgraph cluster_GET_stats_redis_cache {
+      label="redis_cache";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_redis_cache_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_redis_cache_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      P_Busy_redis_cache_GET_stats_S2 [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy_S2"];
+      P_Busy_redis_cache_GET_stats_S3 [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy_S3"];
+      P_Busy_redis_cache_GET_stats_S4 [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy_S4"];
+      IT_Start_redis_cache_GET_stats [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_redis_cache_GET_stats [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+      TT_Processing_redis_cache_GET_stats_S2 [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing_S2"];
+      TT_Processing_redis_cache_GET_stats_S3 [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing_S3"];
+      TT_Processing_redis_cache_GET_stats_S4 [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing_S4"];
+    }
+    subgraph cluster_GET_stats_postgresql_db {
+      label="postgresql_db";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_postgresql_db_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_postgresql_db_GET_stats [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      IT_Start_postgresql_db_GET_stats [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_postgresql_db_GET_stats [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    }
+  }
+
+  // --- ARCOS ---
+  TT_Arrival_GET_stats -> P_Gen_GET_stats;
+  P_Gen_GET_stats -> IT_Enter_GET_stats;
+  P_Free_GET_stats -> IT_Enter_GET_stats [color="#16697a"];
+  IT_Enter_GET_stats -> P_Queue_GET_stats;
+  P_Queue_GET_stats -> IT_Start_GET_stats;
+  P_Workers -> IT_Start_GET_stats [color="#1a6b3c"];
+  IT_Start_GET_stats -> P_Wait_redis_cache_GET_stats;
+  P_Wait_redis_cache_GET_stats -> IT_Start_redis_cache_GET_stats;
+  P_Workers_redis_cache -> IT_Start_redis_cache_GET_stats [color="#8a5a00"];
+  IT_Start_redis_cache_GET_stats -> P_Busy_redis_cache_GET_stats;
+  P_Busy_redis_cache_GET_stats -> TT_Processing_redis_cache_GET_stats;
+  TT_Processing_redis_cache_GET_stats -> P_Busy_redis_cache_GET_stats_S2;
+  P_Busy_redis_cache_GET_stats_S2 -> TT_Processing_redis_cache_GET_stats_S2;
+  TT_Processing_redis_cache_GET_stats_S2 -> P_Busy_redis_cache_GET_stats_S3;
+  P_Busy_redis_cache_GET_stats_S3 -> TT_Processing_redis_cache_GET_stats_S3;
+  TT_Processing_redis_cache_GET_stats_S3 -> P_Busy_redis_cache_GET_stats_S4;
+  P_Busy_redis_cache_GET_stats_S4 -> TT_Processing_redis_cache_GET_stats_S4;
+  TT_Processing_redis_cache_GET_stats_S4 -> P_Wait_postgresql_db_GET_stats;
+  TT_Processing_redis_cache_GET_stats_S4 -> P_Workers_redis_cache [color="#8a5a00", constraint=false];
+  P_Wait_postgresql_db_GET_stats -> IT_Start_postgresql_db_GET_stats;
+  P_Workers_postgresql_db -> IT_Start_postgresql_db_GET_stats [color="#6a3d9a"];
+  IT_Start_postgresql_db_GET_stats -> P_Busy_postgresql_db_GET_stats;
+  P_Busy_postgresql_db_GET_stats -> TT_Processing_postgresql_db_GET_stats;
+  TT_Processing_postgresql_db_GET_stats -> P_Busy_GET_stats;
+  TT_Processing_postgresql_db_GET_stats -> P_Workers_postgresql_db [color="#6a3d9a", constraint=false];
+  P_Busy_GET_stats -> TT_Processing_GET_stats;
+  TT_Processing_GET_stats -> P_Workers [color="#1a6b3c", constraint=false];
+  TT_Processing_GET_stats -> P_Free_GET_stats [color="#16697a", constraint=false];
+  P_Gen_GET_stats -> IT_Drop_GET_stats;
+  P_Free_GET_stats -> IT_Drop_GET_stats [arrowhead=odot, color="#b03030", penwidth=1.7, constraint=false];
+}

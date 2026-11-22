@@ -1,0 +1,77 @@
+digraph SPN {
+  rankdir=LR;
+  splines=spline;
+  nodesep=0.75;
+  ranksep=1.05;
+  bgcolor="white";
+  pad=0.35;
+  forcelabels=true;
+  compound=true;
+  node [fontname="Helvetica", fontsize=10];
+  edge [fontname="Helvetica", fontsize=9, arrowsize=0.75, color="#2b2b2b"];
+
+  // --- RECURSOS COMPARTILHADOS ---
+  P_Workers [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="4", xlabel="P_Workers"];
+  P_Workers_auth_service [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers_auth_service"];
+  P_Workers_payment_gateway [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="5", xlabel="P_Workers_payment_gateway"];
+
+  // --- SUBREDES DAS ROTAS ---
+  subgraph cluster_POST_checkout {
+    label="POST_checkout";
+    fontsize=12;
+    style=rounded; color="#b9c4d4"; margin=14;
+    P_Gen_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Gen"];
+    P_Queue_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Queue"];
+    P_Busy_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+    P_Free_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="3", xlabel="P_Free"];
+    TT_Arrival_POST_checkout [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Arrival"];
+    IT_Enter_POST_checkout [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Enter"];
+    IT_Start_POST_checkout [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+    TT_Processing_POST_checkout [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    IT_Drop_POST_checkout [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Drop"];
+    subgraph cluster_POST_checkout_auth_service {
+      label="auth_service";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_auth_service_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_auth_service_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      IT_Start_auth_service_POST_checkout [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_auth_service_POST_checkout [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    }
+    subgraph cluster_POST_checkout_payment_gateway {
+      label="payment_gateway";
+      fontsize=10;
+      style=dotted; color="#b03030"; penwidth=1.4; margin=12;
+      P_Wait_payment_gateway_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Wait"];
+      P_Busy_payment_gateway_POST_checkout [shape=circle, style=filled, fillcolor="#e8f0fe", color="#33507a", penwidth=1.6, width=0.55, fixedsize=true, label="", xlabel="P_Busy"];
+      IT_Start_payment_gateway_POST_checkout [shape=box, style=filled, fillcolor="#3c3c3c", color="#3c3c3c", width=0.13, height=0.55, fixedsize=true, label="", xlabel="IT_Start"];
+      TT_Processing_payment_gateway_POST_checkout [shape=box, style=filled, fillcolor="white", color="#3c3c3c", penwidth=1.8, width=0.17, height=0.55, fixedsize=true, label="", xlabel="TT_Processing"];
+    }
+  }
+
+  // --- ARCOS ---
+  TT_Arrival_POST_checkout -> P_Gen_POST_checkout;
+  P_Gen_POST_checkout -> IT_Enter_POST_checkout;
+  P_Free_POST_checkout -> IT_Enter_POST_checkout [color="#16697a"];
+  IT_Enter_POST_checkout -> P_Queue_POST_checkout;
+  P_Queue_POST_checkout -> IT_Start_POST_checkout;
+  P_Workers -> IT_Start_POST_checkout [color="#1a6b3c"];
+  IT_Start_POST_checkout -> P_Wait_auth_service_POST_checkout;
+  P_Wait_auth_service_POST_checkout -> IT_Start_auth_service_POST_checkout;
+  P_Workers_auth_service -> IT_Start_auth_service_POST_checkout [color="#8a5a00"];
+  IT_Start_auth_service_POST_checkout -> P_Busy_auth_service_POST_checkout;
+  P_Busy_auth_service_POST_checkout -> TT_Processing_auth_service_POST_checkout;
+  TT_Processing_auth_service_POST_checkout -> P_Wait_payment_gateway_POST_checkout;
+  TT_Processing_auth_service_POST_checkout -> P_Workers_auth_service [color="#8a5a00", constraint=false];
+  P_Wait_payment_gateway_POST_checkout -> IT_Start_payment_gateway_POST_checkout;
+  P_Workers_payment_gateway -> IT_Start_payment_gateway_POST_checkout [color="#6a3d9a"];
+  IT_Start_payment_gateway_POST_checkout -> P_Busy_payment_gateway_POST_checkout;
+  P_Busy_payment_gateway_POST_checkout -> TT_Processing_payment_gateway_POST_checkout;
+  TT_Processing_payment_gateway_POST_checkout -> P_Busy_POST_checkout;
+  TT_Processing_payment_gateway_POST_checkout -> P_Workers_payment_gateway [color="#6a3d9a", constraint=false];
+  P_Busy_POST_checkout -> TT_Processing_POST_checkout;
+  TT_Processing_POST_checkout -> P_Workers [color="#1a6b3c", constraint=false];
+  TT_Processing_POST_checkout -> P_Free_POST_checkout [color="#16697a", constraint=false];
+  P_Gen_POST_checkout -> IT_Drop_POST_checkout;
+  P_Free_POST_checkout -> IT_Drop_POST_checkout [arrowhead=odot, color="#b03030", penwidth=1.7, constraint=false];
+}

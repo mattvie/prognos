@@ -1,0 +1,52 @@
+openapi: 3.0.0
+info:
+  title: "Hospital Digital - Sistema de Informacao Hospitalar (Redimensionado)"
+  description: >
+    Mesma especificacao de hospital.yaml, com a configuracao de infraestrutura
+    recomendada pela varredura de dimensionamento do Capitulo 6: 7 instancias,
+    6 conexoes com o banco de dados e buffer de 4 posicoes por rota.
+  version: "1.0.0"
+
+x-service-performance:
+  # Pool de instancias concorrentes do servidor de aplicacao.
+  instances: 7
+  worker_type: "standard-cpu"
+  # Buffer de entrada de cada rota. Valor baixo tanto por representar o backlog
+  # de conexoes de um servidor real quanto para manter o espaco de estados
+  # tratavel pela analise estacionaria.
+  route_capacity: 4
+  # Capacidade do pool de conexoes do banco de dados, disputado pelas rotas que o declaram.
+  dependency_pools:
+    postgresql-db: 6
+
+paths:
+  # Triagem: processamento local puro, sem acesso ao banco de dados. E a rota de maior
+  # carga e menor latencia, e a que define o SLA do pronto-socorro.
+  /v1/triage:
+    post:
+      summary: "Classificacao de risco na emergencia"
+      x-performance:
+        processing_time: {distribution: exponential, mean_ms: 15}
+        arrival_rate: 70
+
+  /v1/appointments:
+    # Leitura de prontuarios: alto volume. As tres consultas do handler real
+    # foram agregadas em um unico acesso equivalente.
+    get:
+      summary: "Consulta de agendamentos e prontuarios"
+      x-performance:
+        processing_time: {distribution: exponential, mean_ms: 25}
+        arrival_rate: 55
+        dependencies:
+          - {service: postgresql-db, calls: 1, mean_ms: 24}
+
+    # Escrita transacional: cadastra o paciente quando necessario, verifica a
+    # sobreposicao de horario e insere o agendamento. Sao as tres operacoes do
+    # createAppointmentHandler, declaradas como tres chamadas em serie.
+    post:
+      summary: "Confirmacao de internacao ou agendamento cirurgico"
+      x-performance:
+        processing_time: {distribution: exponential, mean_ms: 40}
+        arrival_rate: 18
+        dependencies:
+          - {service: postgresql-db, calls: 3, mean_ms: 30}

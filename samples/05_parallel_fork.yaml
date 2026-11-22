@@ -1,0 +1,24 @@
+openapi: 3.0.0
+info:
+  title: Processamento Paralelo (Fork/Join Simulado)
+  version: 1.0.0
+  description: Simula uma rota que delega tarefas para workers secundários (Log e Notificação).
+x-service-performance:
+  instances: 5
+  worker_type: standard
+paths:
+  /order:
+    post:
+      summary: Criação de Pedido com disparos paralelos
+      x-performance:
+        processing_time:
+          distribution: exponential
+          mean_ms: 15
+        dependencies:
+          - service: email
+            calls: 1
+          - service: audit
+            calls: 1
+      responses:
+        '200':
+          description: OK
